@@ -42,10 +42,10 @@ def takeoff_and_spin(duration):
 
     time.sleep(duration)  # Let the props spin for the specified duration
 
-    print("Landing after spinning for 5 seconds.")
+    print(f"Landing after spinning for {duration} seconds.")
     vehicle.mode = VehicleMode("LAND")
 
 vehicle = connectMyCopter()
 arm()
-takeoff_and_spin(5)
+takeoff_and_spin(1)
 print("End of script.")
