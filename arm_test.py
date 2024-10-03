@@ -17,12 +17,13 @@ def connectMyCopter():
     return vehicle
 
 def arm():
-    while vehicle.is_armable == False:
-        print("Waiting for vehicle to become armable...")
-        time.sleep(1)
+    #while vehicle.is_armable == False:
+    #    print("Waiting for vehicle to become armable...")
+    #    time.sleep(1)
     print("Yoooo vehicle is now armable")
     print("")
-
+    
+    vehicle.mode = VehicleMode("GUIDED")
     vehicle.armed = True
     while vehicle.armed == False:
         print("Waiting for drone to become armed...")
@@ -33,6 +34,18 @@ def arm():
 
     return None
 
+def takeoff_and_spin(duration):
+    print("Taking off and spinning propellers...")
+    
+    target_altitude = 1  # Setting a low altitude to make the props spin without actual takeoff
+    vehicle.simple_takeoff(target_altitude)
+
+    time.sleep(duration)  # Let the props spin for the specified duration
+
+    print("Landing after spinning for 5 seconds.")
+    vehicle.mode = VehicleMode("LAND")
+
 vehicle = connectMyCopter()
 arm()
+takeoff_and_spin(5)
 print("End of script.")
