@@ -1,18 +1,5 @@
 from dronekit import connect, VehicleMode, APIException
 import time
-import argparse
-
-# def connectMyCopter():
-#     parser = argparse.ArgumentParser(description="commands")
-#     parser.add_argument('--connect')
-#     args = parser.parse_args()
-
-#     connection_string = args.connect
-#     baud_rate = 57600
-
-#     vehicle = connect(connection_string, baud=baud_rate, wait_ready=True)
-#     return vehicle
-
 def establishConnection():
     baud_rate = 57600
     vehicle = connect('/dev/ttyAMA0', wait_ready=True, baud=baud_rate)
@@ -37,49 +24,6 @@ def set_home_location():
 
     print(f"Home Location: {vehicle.home_location}")
 
-def arm():
-    print("Yoooo vehicle is now armable")
-    print("")
-    
-    vehicle.mode = VehicleMode("ALT_HOLD")  # Switch to ALT_HOLD mode
-    vehicle.armed = True
-    while vehicle.armed == False:
-        print("Waiting for drone to become armed...")
-        time.sleep(1)
-
-    print("Vehicle is now armed.")
-    print("OMG props are spinning. LOOK OUT!!!!!")
-
-    return None
-
-def takeoff_and_spin(duration):
-    print("Hovering and spinning propellers...")
-    
-    # We don't need to take off to a high altitude, since we are in ALT_HOLD mode
-    target_altitude = 1  # This sets the hover altitude to a low level
-    vehicle.simple_takeoff(target_altitude)
-
-    time.sleep(duration)  # Let the drone hover and spin for the specified duration
-
-    print(f"Landing after spinning for {duration} seconds.")
-    vehicle.mode = VehicleMode("LAND")  # Set mode to LAND after hovering
-
-def manual_throttle(throttle_value, duration):
-    print(f"Setting throttle to {throttle_value} for {duration} seconds...")
-    
-    # Throttle is on channel 3 in RC (1000-2000 microseconds)
-    vehicle.channels.overrides['3'] = throttle_value
-    
-    time.sleep(duration)
-    
-    # Clear the override after duration
-    vehicle.channels.overrides['3'] = None
-    print("Throttle override cleared")
-
-def land():
-    vehicle.mode = VehicleMode("LAND")
-    print("Landing...")
-    
 def arm_and_takeoff(aTargetAltitude):
     """
     Arms vehicle and fly to aTargetAltitude.
@@ -114,12 +58,19 @@ def arm_and_takeoff(aTargetAltitude):
             break
         time.sleep(1)
 
-# vehicle = connectMyCopter()
+def land():
+    vehicle.mode = VehicleMode("LAND")
+    print("Landing...")
+
 vehicle = establishConnection()
+
+# Check and set home location
 set_home_location()
+
+# Arm and takeoff to 2 meters
 arm_and_takeoff(2)
-# arm()
-# takeoff_and_spin(5)  # Hover for 5 seconds
-# manual_throttle(1500, 5)
+
+# Land after the flight
 land()
+
 print("End of script.")
