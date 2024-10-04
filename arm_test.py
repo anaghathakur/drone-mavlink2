@@ -92,7 +92,25 @@ def takeoff_and_spin(duration):
     print(f"Landing after spinning for {duration} seconds.")
     vehicle.mode = VehicleMode("LAND")  # Set mode to LAND after hovering
 
+def manual_throttle(throttle_value, duration):
+    print(f"Setting throttle to {throttle_value} for {duration} seconds...")
+    
+    # Throttle is on channel 3 in RC (1000-2000 microseconds)
+    vehicle.channels.overrides['3'] = throttle_value
+    
+    time.sleep(duration)
+    
+    # Clear the override after duration
+    vehicle.channels.overrides['3'] = None
+    print("Throttle override cleared")
+
+def land():
+    vehicle.mode = VehicleMode("LAND")
+    print("Landing...")
+
 vehicle = connectMyCopter()
 arm()
-takeoff_and_spin(5)  # Hover for 5 seconds
+# takeoff_and_spin(5)  # Hover for 5 seconds
+manual_throttle(1500, 5)
+land()
 print("End of script.")
