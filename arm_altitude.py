@@ -41,6 +41,6 @@ def land():
 
 vehicle = establishConnection()
 arm()
-takeoff_and_spin(5)
+takeoff_and_spin(15)
 land()
 print("End of script.")
