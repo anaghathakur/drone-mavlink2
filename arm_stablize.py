@@ -1,6 +1,5 @@
-from dronekit import connect, VehicleMode, APIException
+from dronekit import connect, VehicleMode
 import time
-from pymavlink import mavutil
 
 def establishConnection():
     baud_rate = 57600
@@ -22,18 +21,27 @@ def arm(vehicle):
 def set_rc_channel_pwm(vehicle, channel_id, pwm=1500):
     """ Set RC channel pwm value
     Args:
-        channel_id (TYPE): Channel ID
+        channel_id (int): Channel ID
         pwm (int, optional): Channel pwm value 1100-1900
     """
-    if channel_id < 1 or channel_id > 18:
+    if channel_id < 1 or channel_id > 8:
         print("Channel does not exist.")
         return
+    
+    # Set the channel override
+    vehicle.channels.overrides[channel_id] = pwm
 
-    # Mavlink 2 supports up to 18 channels:
-    # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
-    rc_channel_values = [65535 for _ in range(18)]
-    rc_channel_values[channel_id - 1] = pwm
-    vehicle.send_mavlink(mavutil.mavlink.MAVLink_rc_channels_override_message(*rc_channel_values))
+def clear_rc_override(vehicle, channel_id):
+    """ Clear the RC channel override
+    Args:
+        channel_id (int): Channel ID
+    """
+    if channel_id < 1 or channel_id > 8:
+        print("Channel does not exist.")
+        return
+    
+    # Clear the channel override
+    vehicle.channels.overrides[channel_id] = None
 
 def indoor_flight(vehicle, duration):
     print(f"Attempting indoor flight for {duration} seconds...")
@@ -58,6 +66,9 @@ def indoor_flight(vehicle, duration):
     
     # Cut throttle
     set_rc_channel_pwm(vehicle, 3, 1000)
+    
+    # Clear the override
+    clear_rc_override(vehicle, 3)
     
     print("Flight complete")
 
